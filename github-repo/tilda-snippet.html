@@ -1,0 +1,47 @@
+<!--
+  Вставить этот код в блок Тильды: T123 (HTML-код) на странице с якорем #raspisanie.
+  CSV_URL ниже заменить на вашу raw-ссылку с GitHub, например:
+  https://raw.githubusercontent.com/USERNAME/aquakids-schedule/main/raspisanie.csv
+-->
+<div id="raspisanie-table">Загрузка расписания…</div>
+
+<style>
+  #raspisanie-table table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; }
+  #raspisanie-table th, #raspisanie-table td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+  #raspisanie-table th { background: #2E7D32; color: #fff; }
+  #raspisanie-table tr:nth-child(even) { background: #f7f7f7; }
+</style>
+
+<script>
+(function () {
+  var CSV_URL = "https://raw.githubusercontent.com/USERNAME/aquakids-schedule/main/raspisanie.csv";
+
+  function parseCSV(text) {
+    return text
+      .trim()
+      .split("\n")
+      .map(function (line) { return line.split(",").map(function (c) { return c.trim(); }); });
+  }
+
+  fetch(CSV_URL + "?t=" + Date.now())
+    .then(function (r) { return r.text(); })
+    .then(function (text) {
+      var rows = parseCSV(text);
+      var headers = rows.shift();
+      var html = "<table><thead><tr>";
+      headers.forEach(function (h) { html += "<th>" + h + "</th>"; });
+      html += "</tr></thead><tbody>";
+      rows.forEach(function (row) {
+        html += "<tr>";
+        row.forEach(function (cell) { html += "<td>" + cell + "</td>"; });
+        html += "</tr>";
+      });
+      html += "</tbody></table>";
+      document.getElementById("raspisanie-table").innerHTML = html;
+    })
+    .catch(function (err) {
+      document.getElementById("raspisanie-table").innerText = "Не удалось загрузить расписание";
+      console.error(err);
+    });
+})();
+</script>
