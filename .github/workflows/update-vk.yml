@@ -1,0 +1,23 @@
+name: Update VK wall from schedule
+
+on:
+  push:
+    paths:
+      - "raspisanie.csv"
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 6 * * *"  # раз в день в 06:00 UTC, можно поменять
+
+jobs:
+  update-vk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests
+      - run: python scripts/update_vk.py
+        env:
+          VK_TOKEN: ${{ secrets.VK_TOKEN }}
+          VK_GROUP_ID: ${{ secrets.VK_GROUP_ID }}
